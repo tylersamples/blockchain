@@ -1,0 +1,45 @@
+block:
+   path: /block
+   controller: App\Controller\BlockController::index
+   methods: [GET, HEAD]
+
+block_add:
+  path: /block
+  controller: App\Controller\BlockController::add
+  methods: [POST]
+
+block_sync:
+  path: /block/sync
+  controller: App\Controller\BlockController::sync
+  methods: [POST]
+
+block_reset:
+   path: /block
+   controller: App\Controller\BlockController::remove
+   methods: [DELETE]
+
+block_detail:
+  path: /block/{hash}
+  controller: App\Controller\BlockController::detail
+  methods: [GET, HEAD]
+
+peer:
+  path: /peer
+  controller: App\Controller\PeerController::index
+  methods: [GET, HEAD]
+
+peer_add:
+  path: /peer
+  controller: App\Controller\PeerController::add
+  methods: [POST]
+
+peer_sync:
+  path: /peer/sync
+  controller: App\Controller\PeerController::sync
+  methods: [POST]
+
+peer_reset:
+  path: /peer
+  controller: App\Controller\PeerController::remove
+  methods: [DELETE]
+
