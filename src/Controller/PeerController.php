@@ -6,21 +6,22 @@ namespace App\Controller;
 
 use App\P2P;
 use App\Entity\Peer;
-use App\EventSubscriber\PeerEventSubscriber;
+
 use Symfony\Component\HttpFoundation\{
     Request,
     Response,
     JsonResponse
 };
-use Symfony\Component\Cache\Simple\RedisCache;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+
 
 /**
  * Class PeerController
+ *
  * @package App\Controller
  */
 class PeerController
 {
+    /** @var null|P2P */
     private $p2p = null;
 
     /**

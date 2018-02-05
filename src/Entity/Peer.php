@@ -5,26 +5,25 @@ declare(strict_types=1);
 namespace App\Entity;
 
 /**
- * Class Block
+ * Class Peer
+ *
  * @package App\Entity
  */
 class Peer
 {
-
+    /** @var string */
     public $endpoint;
+
+    /** @var boolean */
     public $connected = false;
 
 
     /**
-     * Block constructor.
+     * Peer constructor.
      *
-     * @param int $index
+     * @param string $host
      *
-     * @param string $previousHash
-     *
-     * @param int $timestamp
-     *
-     * @param string $data
+     * @param int port
      */
     public function __construct(string $host, int $port = 8081)
     {
@@ -65,7 +64,8 @@ class Peer
         try {
             $client = new \GuzzleHttp\Client();
 
-            $response = $client->post("http://$this->endpoint/block/sync", ['json' => $block]);
+            // Send the block to the sync so it doesn't dispatch and create a loop.
+            $client->post("http://$this->endpoint/block/sync", ['json' => $block]);
         }
         catch(\Exception $e) {
             var_dump($e->getMessage());

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App;
 
 use App\Entity\Peer;
-//use App\Event\PeerAddEvent;
 use App\Event\PeerAddEvent;
 use App\EventSubscriber\PeerEventSubscriber;
 
@@ -16,16 +15,20 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class P2P
+ *
  * @package App
  */
 class P2P {
 
     const CACHE_KEY = 'peers';
 
-    private $cache = null;
-
+    /** @var bool|array */
     private $peers = false;
 
+    /** @var null|RedisCache */
+    private $cache = null;
+
+    /** @var null|EventDispatcher */
     private $dispatcher = null;
 
     /**

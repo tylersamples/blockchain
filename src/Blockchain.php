@@ -13,16 +13,20 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Class Blockchain
+ *
  * @package App
  */
 class Blockchain
 {
     const CACHE_KEY = 'blocks';
 
+    /** @var bool|array */
     private $blocks = false;
 
+    /** @var null|RedisCache */
     private $cache = null;
 
+    /** @var null|EventDispatcher */
     private $dispatcher = null;
 
     /**

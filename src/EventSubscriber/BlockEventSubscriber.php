@@ -6,6 +6,7 @@ namespace App\EventSubscriber;
 
 use App\P2P;
 use App\Event\BlockAddEvent;
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -14,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class BlockEventSubscriber implements EventSubscriberInterface {
 
+    /** @var null|App\P2P */
     private $p2p = null;
 
     /**
@@ -40,6 +42,8 @@ class BlockEventSubscriber implements EventSubscriberInterface {
     }
 
     /**
+     * Loop over all of our peers and send them the created block.
+     *
      * @param BlockAddEvent $event
      */
     public function syncBlock(BlockAddEvent $event)

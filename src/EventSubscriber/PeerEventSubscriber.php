@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\{
-    Blockchain,
-    P2P
-};
+use App\Blockchain;
 use App\Event\PeerAddEvent;
+
 use Symfony\Component\Cache\Simple\RedisCache;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -49,7 +47,8 @@ class PeerEventSubscriber implements EventSubscriberInterface {
             $responseDelete = $client->delete("http://$peer->endpoint/block");
             if ($responseDelete->getStatusCode() === 200) {
 
-                $responsePeer = $client->post("http://$peer->endpoint/peer/sync", [
+                // Send the peer to the sync endpoint so it doesn't dispatch and create an loop.
+                $client->post("http://$peer->endpoint/peer/sync", [
                     'json' => [
                         'peers' => [
                             str_replace(':8081', '', \getenv('HTTP_HOST'))

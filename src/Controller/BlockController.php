@@ -10,8 +10,7 @@ namespace App\Controller;
 
 use App\Blockchain;
 use App\Entity\Block;
-use App\Event\BlockMineEvent;
-use App\EventSubscriber\BlockEventSubscriber;
+
 use Symfony\Component\HttpFoundation\{
     Request,
     Response,
@@ -25,6 +24,7 @@ use Symfony\Component\HttpFoundation\{
  */
 class BlockController
 {
+    /** @var null|Blockchain */
     private $blockchain = null;
 
     /**
@@ -73,6 +73,8 @@ class BlockController
 
 
     /**
+     * POST /block
+     *
      * @param Request $request
      *
      * @param bool $dispatch
@@ -101,6 +103,8 @@ class BlockController
     }
 
     /**
+     * POST /block/sync
+     *
      * @param Request $request
      *
      * @return Response

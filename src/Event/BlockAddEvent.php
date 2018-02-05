@@ -15,6 +15,7 @@ class BlockAddEvent extends Event {
 
     const NAME = 'block.mine';
 
+    /** @var App\Entity\Block */
     public $block;
 
     public function __construct($block)

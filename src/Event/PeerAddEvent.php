@@ -15,6 +15,7 @@ class PeerAddEvent extends Event {
 
     const NAME = 'peer.add';
 
+    /** @var App\Entity\Peer */
     public $peer;
 
     public function __construct($peer)

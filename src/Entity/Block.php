@@ -6,15 +6,24 @@ namespace App\Entity;
 
 /**
  * Class Block
+ *
  * @package App\Entity
  */
 class Block
 {
-
+    /** @var int */
     public $index;
+
+    /** @var string */
     public $previousHash;
+
+    /** @var string */
     public $data;
+
+    /** @var int */
     public $timestamp;
+
+    /** @var string */
     public $hash;
 
 
