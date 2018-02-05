@@ -41,7 +41,7 @@ class P2P {
         );
 
         $this->dispatcher = new EventDispatcher();
-        $this->dispatcher->addSubscriber(new PeerEventSubscriber());
+        $this->dispatcher->addSubscriber(new PeerEventSubscriber($this));
 
         // Load our blocks from Redis.
         $peersFromCache = $this->cache->get(P2P::CACHE_KEY) ?? "";
@@ -71,7 +71,10 @@ class P2P {
         $peers = $this->peers ? $this->peers : [];
         $peerEndpoints = array_map(function($storedPeer) {return $storedPeer->endpoint; }, $peers);
 
-        if (in_array($peer->endpoint, $peerEndpoints)) {
+        $ourEndpoint = \getenv('HTTP_HOST');
+
+        // Check if we already know about this peer and if the peer is ourself.
+        if (in_array($peer->endpoint, $peerEndpoints) || $peer->endpoint == $ourEndpoint)  {
             return true;
         }
 
@@ -83,9 +86,11 @@ class P2P {
                 $this->dispatcher->dispatch(PeerAddEvent::NAME, new PeerAddEvent($peer));
             }
             $this->writePeers();
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**

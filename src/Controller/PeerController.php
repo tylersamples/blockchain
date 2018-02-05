@@ -76,13 +76,14 @@ class PeerController
     }
 
     /**
+     * POST /peer/sync
+     *
      * @param Request $request
      *
      * @return Response
      */
     public function sync(Request $request): Response
     {
-        var_dump("don't dispatch");
         return $this->add($request, false);
     }
 

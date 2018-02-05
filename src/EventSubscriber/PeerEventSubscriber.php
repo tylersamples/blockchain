@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Blockchain;
+use App\{
+    P2P,
+    Blockchain
+};
 use App\Event\PeerAddEvent;
 
 use Symfony\Component\Cache\Simple\RedisCache;
@@ -15,7 +18,21 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * @package App\Event
  */
-class PeerEventSubscriber implements EventSubscriberInterface {
+class PeerEventSubscriber implements EventSubscriberInterface
+{
+
+    /** @var null|App\P2P */
+    private $p2p = null;
+
+    /**
+     * PeerEventSubscriber constructor.
+     *
+     * @param P2P $p2p
+     */
+    public function __construct(P2P $p2p)
+    {
+        $this->p2p = $p2p;
+    }
 
     /**
      * Define the events we are interested in.
@@ -39,20 +56,34 @@ class PeerEventSubscriber implements EventSubscriberInterface {
      */
     public function addPeer(PeerAddEvent $event)
     {
-        $peer = $event->peer;
         try {
             $client = new \GuzzleHttp\Client();
 
-            // Reset all the blocks the peer has. Lets not presume the state the peer's blockchain is in.
-            $responseDelete = $client->delete("http://$peer->endpoint/block");
+            $newPeer = $event->peer;
+
+            // Notify all our current peers about this new peer.
+            foreach ($this->p2p->getPeers() as $currentPeer) {
+                $request = $client->post("http://$currentPeer->endpoint/peer/sync", [
+                    'json' => [
+                        'peers' => [str_replace(':8081', '', $newPeer->endpoint)]
+                    ]
+                ]);
+            }
+
+            // Reset all the blocks the new peer has. Lets not presume the state the new peer's blockchain is in.
+            $responseDelete = $client->delete("http://$newPeer->endpoint/block");
             if ($responseDelete->getStatusCode() === 200) {
 
-                // Send the peer to the sync endpoint so it doesn't dispatch and create an loop.
-                $client->post("http://$peer->endpoint/peer/sync", [
+                $peerEndpoints = array_map(function($storedPeer) {
+                    return str_replace(':8081', '', $storedPeer->endpoint);
+                    }, $this->p2p->getPeers());
+
+                $peerEndpoints[] = str_replace(':8081', '', \getenv('HTTP_HOST'));
+
+                // Send the new peer our peer info and send it to the sync endpoint so it doesn't dispatch and create an loop.
+                $request = $client->post("http://$newPeer->endpoint/peer/sync", [
                     'json' => [
-                        'peers' => [
-                            str_replace(':8081', '', \getenv('HTTP_HOST'))
-                        ],
+                        'peers' => $peerEndpoints
                     ]
                 ]);
 
@@ -64,7 +95,7 @@ class PeerEventSubscriber implements EventSubscriberInterface {
 
                 $blocks = unserialize($blocksFromCache);
                 foreach ($blocks as $block) {
-                    $peer->syncBlock($block);
+                    $newPeer->syncBlock($block);
                 }
             }
         }
