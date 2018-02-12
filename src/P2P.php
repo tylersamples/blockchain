@@ -11,8 +11,6 @@ use App\EventSubscriber\PeerEventSubscriber;
 use Symfony\Component\Cache\Simple\RedisCache;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
-
-
 /**
  * Class P2P
  *
@@ -50,10 +48,22 @@ class P2P {
     }
 
     /**
+     * Get the peers that have been loaded from cache.
+     *
      * @return array
      */
     public function getPeers(): array {
         return $this->peers ? $this->peers : [];
+    }
+
+    /**
+     * Return all loaded peers endpoints.
+     *
+     * @return array
+     */
+    public function getEndpoints(): array {
+        $peers = $this->peers ? $this->peers : [];
+        return array_map(function($storedPeer) {return $storedPeer->endpoint; }, $peers);
     }
 
     /**
@@ -68,8 +78,7 @@ class P2P {
     public function addPeer(Peer $peer, $dispatch): bool {
 
         $peer->testConnection();
-        $peers = $this->peers ? $this->peers : [];
-        $peerEndpoints = array_map(function($storedPeer) {return $storedPeer->endpoint; }, $peers);
+        $peerEndpoints = $this->getEndpoints();
 
         $ourEndpoint = \getenv('HTTP_HOST');
 
@@ -102,7 +111,7 @@ class P2P {
     }
 
     /**
-     *
+     * Delete all peers in cache.
      */
     public function reset(): void {
         $this->cache->set(P2P::CACHE_KEY, false);
