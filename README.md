@@ -32,5 +32,5 @@ $ curl -iX POST -d $(php -r 'echo json_encode(["id" => 0, "previousHash" => "", 
 ```
 Add Peers
 ```
-$ curl -iX POST -d (php -r 'echo json_encode(["peers" => ["'(docker-machine ip peer2)'", "'(docker-machine ip peer3)'", "not.accessible"]]);') (docker-machine ip peer1)/peer
+$ curl -iX POST -d $(php -r 'echo json_encode(["peers" => ["'$(docker-machine ip peer2)'", "'$(docker-machine ip peer3)'", "not.accessible"]]);') $(docker-machine ip peer1)/peer
 ```
